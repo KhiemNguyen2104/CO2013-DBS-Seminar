@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgis/postgis:17-3.4  # This image includes PostgreSQL and PostGIS
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 01686790079
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - nest-network
+
+  app:
+    image: node:16-alpine
+    container_name: flexible-ambulance-services
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: 01686790079
+      DB_NAME: postgres
+    command: npm run start:dev
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - nest-network
+
+networks:
+  nest-network:
+    driver: bridge
+
+volumes:
+  pgdata:
